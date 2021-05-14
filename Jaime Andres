@@ -1,0 +1,92 @@
+method PgMYPProyecto.Page_Load(sender : object; e : EventArgs);
+begin
+
+  try
+    
+    if (Session["AU"].ToString="AU") then
+    begin
+      
+      if not Page.IsPostBack then // si es la primera vez que carga la página
+      begin
+
+        //Se leen los permisos
+        var tarea : Thread := new Thread(new ThreadStart(leerPermisos));
+        tarea.Start();
+        //leerPermisos();
+             
+        ConsultaVigenciaPagInicial();
+        cargaUnidades();
+        //CargaPeriodoAdminProyecto();
+        ConsEstadosProyectos();
+        consultar();
+        //limpiarDatos();
+
+        cargarDeptos();
+              
+        TabContainer2.ActiveTabIndex:=0;
+        tcDetalles.ActiveTabIndex:=0;
+        
+        //ASignación de estilo 
+        //pfondoSombreados.CssClass:="BackGroundPopupExtender FondoSombreado";  //lo pongo comentareado porque se lo asigne directamente en el diseñador ;)
+        //No se establece en el diseñador porque centra el formulario y no me deja ver lo que esta debajo :/
+        pNuevoProyecto.CssClass:="DivCentroForm VentanaPop";  
+        PenviaBanco.CssClass:="DivCentroForm VentanaPop";
+        PAnulaProy.CssClass:="DivCentroForm  VentanaPop";
+        PFinalSuspenderPry.CssClass:="DivCentroForm  VentanaPop";
+        PReanudar.CssClass:="DivCentroForm  VentanaPop";
+        pDatosAsignafuente.CssClass:="DivCentroForm VentanaPop ";
+        PeliminarProy.CssClass:="DivCentroForm VentanaPop";
+        PRptProyecto.CssClass:="DivCentroForm VentanaPop";
+
+        //Doy los estilos del marco del pop central
+        pMarcoPop.CssClass:="DivCentroForm";
+        pMarcoPop.Attributes.Remove("style");
+
+      end; // fin if not Page.IsPostBack then
+
+    end else begin
+
+      //No Se encuetra logueado no puede permaencer en la pagina
+      Session["AU"]:="UA";
+           
+      var LogNA, LogNA2, LogSub, LogTxtSub, Loglb, logTranf, logVM : String;
+
+      LogNA := "Sistema Integrado Administrativo y Financiero"; 
+      LogNA2 := "MODULO MYP";
+      LogSub := "Bienvenido: ";
+      LogTxtSub := " Este módulo le permite realizar la creación y seguimiento de los planes de desarrollo";
+      Loglb := "   MYP";
+      logTranf := Page.ResolveUrl("~/Modulos/MetasYProyecto/MYP/Menu/PgMYPDefault.aspx");
+      logVM := "MYP";
+
+      var parametrosRetorno : String:="?LogNA=" +LogNA+ "&LogNA2=" + LogNA2 + "&LogSub=" + LogSub + "&LogTxtSub=" + LogTxtSub + "&Loglb="+Loglb + "&logTranf="+ logTranf + "&logVM=" + logVM ;
+
+      Response.Redirect(Page.ResolveUrl("../../../../PgLogin.aspx"+ parametrosRetorno));
+   
+    end; // fin if (Session["AU"].ToString="AU") then
+
+  except
+
+    on Ex: Exception do begin
+
+      mostrarJsAlertas(Ex.Message, "PCT ENTERPRISE");
+      //Session["AU"]:="UA";
+      //
+      //var LogNA, LogNA2, LogSub, LogTxtSub, Loglb, logTranf, logVM : String;
+      //
+      //LogNA := "Sistema Integrado Administrativo y Financiero"; 
+      //LogNA2 := "MODULO MYP";
+      //LogSub := "Bienvenido: ";
+      //LogTxtSub := " Este módulo le permite realizar la creación y seguimiento de los planes de desarrollo";
+      //Loglb := "   MYP";
+      //logTranf := Page.ResolveUrl("~/Modulos/MetasYProyecto/MYP/Menu/PgMYPDefault.aspx");
+      //logVM := "MYP";
+      //var parametrosRetorno : String := "?LogNA=" +LogNA+ "&LogNA2=" + LogNA2 + "&LogSub=" + LogSub + "&LogTxtSub=" + LogTxtSub + "&Loglb="+Loglb + "&logTranf="+ logTranf + "&logVM=" + logVM ;
+      //
+      //Response.Redirect(Page.ResolveUrl("../../../../PgLogin.aspx"+ parametrosRetorno));
+
+    end;
+
+  end;
+
+end;
